@@ -1,8 +1,8 @@
----
-title: 友链
-date: 2013/7/13 20:46:25
-layout: py
 permalink: friends.html
+title: 友链
+date: '2023-03-11 07:38:51'
+updated: '2023-03-11 07:38:54'
+layout: py
 ---
 
 ## 友链

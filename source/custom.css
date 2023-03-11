@@ -1,3 +1,10 @@
+.nexmoe-avatar {
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3) !important;
+    transition: 0.3s !important;
+}
+.nexmoe-avatar:hover {
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5) !important;
+}
 .nexmoe-count > div {
     background: rgb(248, 248, 248);
     margin: 0px 5px;
@@ -14,12 +21,38 @@
 .nexmoe-posts:hover {
     box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.1);
 }
+.nexmoe-primary {
+    border-radius: 10px;
+    overflow: hidden;
+}
 .nexmoe-post-meta.nexmoe-rainbow {
     padding: 0px 10px;
 }
 .nexmoe-post .nexmoe-post-cover {
     padding-bottom: 30% !important;
     border-radius: 16px 16px 0px 0px !important;
+}
+.nexmoe-post-copyright {
+    margin-top: 40px !important;
+}
+.nexmoe-post-footer {
+    border-radius: 20px 20px 0 0;
+    position: relative;
+}
+.nexmoe-post-footer::before {
+    content: '';
+    position: absolute;
+    width: 5em;
+    height: 10px;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.2);
+    left: 50%;
+    transform: translate(-50%, 0);
+    top: 15px;
+}
+.vpanel {
+    background-color: rgb(255, 255, 255);
+    border-radius: 10px;
 }
 @media screen and (min-width: 1024px){
     .mdui-drawer-close {

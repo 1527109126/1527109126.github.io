@@ -1,6 +1,6 @@
 avatar: https://thirdqq.qlogo.cn/g?b=sdk&k=27Ng6EAub38cF3gdSBSNoA&s=640&t=1654771498 # 网站 Logo
 background: # 既是博客的背景，又是文章默认头图
-  path: https://cdn.jsdelivr.net/gh/nexmoe/nexmoe.github.io@latest/images/cover/5c3aec85a4343.jpg
+  path: https://pi.loili.com/2023/f6783b98aff068804ef345ecfab907ab.jpg
   width: 1440
   height: 960
 favicon:
@@ -10,6 +10,7 @@ favicon:
 function: # 功能开关，可选值（true,false）
   globalToc: true # 开启该功能会自动开启文章 TOC（文章目录） 功能
   wordCount: true # 是否开启文章字数统计 (true, false)
+  darkmode: true
 
 imageCDN: # 图片 CDN 功能
   enable: false # 开启该功能
@@ -46,7 +47,7 @@ menu:
   关于我:
     - https://www.bietiaop.com
     - icon-info-circle
-  友联:
+  友情链接:
     - /friends.html # 使用说明：https://docs.nexmoe.com/article/py
 
 widgets:
