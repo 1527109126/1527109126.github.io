@@ -40,14 +40,14 @@ menu:
   回到首页:
     - /
     - icon-home
-  #  文章归档:  # 使用说明：https://docs.nexmoe.com/article/archive
-  #    - /archive.html
-  #    - icon-container
+  文章归档: # 使用说明：https://docs.nexmoe.com/article/archive
+    - /archive.html
+    - icon-container
   关于我:
     - https://www.bietiaop.com
     - icon-info-circle
   友联:
-    - https://www.bietiaop.com # 使用说明：https://docs.nexmoe.com/article/py
+    - /friends.html # 使用说明：https://docs.nexmoe.com/article/py
 
 widgets:
   - search
@@ -102,7 +102,7 @@ analytics:
   gtm_container_id: #<ID>
 
 # 评论框，目前支持 gitalk,gitment,valine,disqus,disqusjs,changyan,livere,DiscussBot,waline 使用 false 可以关闭
-comment: false
+comment: valine
 gitalk:
   admin: nexmoe # 拥有对该repo进行操作的 GitHub username
   owner: nexmoe # 持有该 repo 的 GitHub username
@@ -115,8 +115,8 @@ gitment:
   clientID: 80b2453b6d5f37ad6225 # GitHub Client ID
   clientSecret: 43e99fa852795c9a7b3eb924b2558c64b84bbdeb # GitHub Client Secret
 valine:
-  appId: <API_ID> # leancloud application app id
-  appKey: <API_Key> # leancloud application app key
+  appId: q3wFidkEgse9PfmKDYl9XugD-gzGzoHsz # leancloud application app id
+  appKey: SvOMchDSYmvR50to670gIrzE # leancloud application app key
 disqus:
   shortname: <shortname> # 你的 Disqus shortname
 disqusjs:
@@ -166,4 +166,4 @@ widgetHitokoto: # 一言组件
   category: # 一言句子类型（可选），不配置的话随机获取，详见 https://developer.hitokoto.cn/sentence/#%E5%8F%A5%E5%AD%90%E7%B1%BB%E5%9E%8B-%E5%8F%82%E6%95%B0
 
 # 自定义侧边栏尾部内容
-sidebar: ''
+sidebar: ' | <a href="" target="_blank">又拍云</a>提供加速服务'
