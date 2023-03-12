@@ -1,3 +1,22 @@
+pre {
+    padding-top: 40px !important;
+    padding-bottom: 10px !important;
+    overflow: auto !important;
+    position: relative;
+}
+pre::before {
+    content: '';
+    position: absolute;
+    width: 13px !important;
+    height: 13px !important;
+    border-radius: 50%;
+    background: rgb(231, 26, 26) !important;
+    top: 13px;
+    left: 13px;
+    display: block;
+    box-shadow: 0 0 3px inset rgba(0, 0, 0, 0.8);
+    transition: 0.3s;
+}
 .nexmoe-avatar {
     box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3) !important;
     transition: 0.3s !important;
@@ -11,15 +30,11 @@
     border-radius: 10px;
     padding: 5px;
 }
-.nexmoe-posts {
+.nexmoe-post {
     border-bottom: 2px solid rgb(196, 196, 196);
     border-radius: 16px;
     overflow: hidden;
-    background: rgb(248, 248, 248);
     transition: 0.3s;
-}
-.nexmoe-posts:hover {
-    box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.1);
 }
 .nexmoe-primary {
     border-radius: 10px;
@@ -33,11 +48,18 @@
     border-radius: 16px 16px 0px 0px !important;
 }
 .nexmoe-post-copyright {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto !important;
     margin-top: 40px !important;
 }
 .nexmoe-post-footer {
+    width: 100%;
     border-radius: 20px 20px 0 0;
     position: relative;
+    padding: 30px !important;
+    box-sizing: border-box;
+    margin: 0 auto !important;
 }
 .nexmoe-post-footer::before {
     content: '';
