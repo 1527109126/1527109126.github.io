@@ -1,6 +1,9 @@
+code {
+    padding: 0 !important;
+}
 pre {
     padding-top: 40px !important;
-    padding-bottom: 10px !important;
+    padding-bottom: 20px !important;
     overflow: auto !important;
     position: relative;
 }
