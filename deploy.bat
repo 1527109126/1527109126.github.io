@@ -1,3 +1,1 @@
-hexo clean && hexo deploy
-
-pause
+hexo clean && hexo deploy && pause
