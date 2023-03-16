@@ -5,8 +5,8 @@
   "scripts": {
     "build": "hexo generate",
     "clean": "hexo clean",
-    "deploy": "hexo clean ; hexo deploy",
-    "server": "hexo s ; start http://localhost:4000 ",
+    "deploy": "hexo clean && hexo deploy",
+    "server": "hexo s && start http://localhost:4000 ",
     "push": "git add . && git commit -m 'update' && git push"
   },
   "hexo": {
