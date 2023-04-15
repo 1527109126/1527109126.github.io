@@ -13,6 +13,14 @@ tags:
   - React Router
 ---
 
+> React Router 官网：[https://reactrouter.com](https://reactrouter.com)
+
+首先安装 `React Router`：
+
+```shell
+npm install react-router-dom -S
+```
+
 ## 核心组件 - BrowserRouter
 
 **作用**：包裹整个应用，一个 React 应用只需要使用一次
@@ -96,6 +104,12 @@ const Login = () => {
 export default Login
 ```
 
+与 `Routes` 和 `useRoutes` 一样，也有 `Navigate`，可直接使用（与 `Link` 类似），结合 `Route` 可以实现重定向：
+
+```jsx
+<Route path="/" element={<Navigate to="/about" />}></Route>
+```
+
 ### 转跳携带跳转参数
 
 **场景**：有些时候不光需要跳转路由还需要传递参数
@@ -114,6 +128,16 @@ export default Login
    ```
 
 2. `params` 传参
+   首先要在 `Routes` 定义名称：
+   ```jsx
+   ...
+    <Routes>
+      ...
+      <Route path="/about/:id" element={<About />}></Route>
+      ...
+    </Routes>
+   ...
+   ```
    传参：
    ```jsx
    navigage('/about/1001')
@@ -123,3 +147,58 @@ export default Login
    let params = useParams()
    let id = params.id
    ```
+
+### 嵌套路由实现
+
+1. `App.js`：定义嵌套路由声明
+   ```jsx
+   <Routes>
+    {/* 定义嵌套关系 */}
+    <Route path='/' element={<Layout />}>
+      <Route path='board' element={<Board />} />
+      <Route path='article' element={<Article />} />
+    </Route>
+   </Routes>
+   ```
+2. `Layout.js`：使用 `<Outlet />` 指定二级路由出口
+   ```jsx
+   import { Outlet } from 'react-router-dom'
+
+   function Layout () {
+    return (
+      <div>
+        layout
+        {/* 二级路由出口 */}
+        <Outlet />
+      </div>
+    )
+   }
+   ```
+
+#### 默认二级路由设置
+
+设置默认显示的二级路由页面：
+  `App.js`：
+  ```jsx
+  <Routes>
+    {/* 定义嵌套关系 */}
+    <Route path='/' element={<Layout />}>
+      <Route index element={<Board />} /> {/* 将 path 改为 index */}
+      <Route path='article' element={<Article />} />
+    </Route>
+  </Routes>
+  ```
+
+### 404 页配置
+
+  ```jsx
+  <Routes>
+    {/* 定义嵌套关系 */}
+    <Route path='/' element={<Layout />}>
+      <Route index element={<Board />} />
+      <Route path='article' element={<Article />} />
+    </Route>
+    {/* 当所有路径都没有匹配到时渲染此路由 */}
+    <Route path='*' element={<NotFound />} />
+  </Routes>
+  ```
