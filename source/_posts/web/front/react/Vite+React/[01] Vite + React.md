@@ -82,3 +82,9 @@ export default defineConfig({
   }
 })
 ```
+
+#### 注意
+
+在最新版本已经无需手动设置 SCSS 的配置，只需要安装 SASS 即可。
+
+不过仍然可以使用上述配置进行全局 SCSS 的配置。
