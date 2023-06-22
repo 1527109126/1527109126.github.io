@@ -122,7 +122,7 @@ import { lazy, Suspense } from 'react';
 const Login = lazy(() => import('./Login'));
 function App() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div>Loading...</div>} >
       <Login />
     </Suspense>
   )
