@@ -49,7 +49,7 @@ function App() {
 }
 ```
 
-当然这是我们使用 JS 的写，也是官方给的写法，若我们使用 TS，则应该这样写（写进一个单独的文件，让 APP 文件导入）：
+当然这是我们使用 JS 的写，也是官方给的写法，若我们使用 TS，则应该加上类型，例如这样（最好写进一个单独的文件，让 APP 文件导入）：
 
 `routes.tsx`：
 
@@ -85,7 +85,7 @@ export default GetRouters;
 `App.tsx`：
 
 ```tsx
-import ....... from ......
+import ...... from ......
 import GetRouters from "./routes"
 
 function App() {
@@ -94,7 +94,7 @@ function App() {
   </BrowserRouter>
 }
 
-........
+......
 ```
 
 当然，我们也可以在 `routes.tsx` 页面中仅写入数组，在 `App.tsx` 进行 `useRoutes`，全看个人喜好。
@@ -113,7 +113,7 @@ function SomeCom(props: {children: JSX.Element}) {
 
 更多用法参考官方文档
 
-# 路由懒加载
+# 组件懒加载
 
 ## React Suspense
 

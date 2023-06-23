@@ -1,8 +1,8 @@
 ---
-title: Redux的使用
+title: Redux的使用 - 以登录状态管理为例
 date: 2023-04-19 16:46:07
 updated: 2023-04-19 16:46:07
-cover: https://pi.loili.com/2023/1c4f5102a78ba7fec349dc73a5e2c1a3.png
+cover: https://pi.loili.com/2023/09ccd44878df88928344c553413f8a64.png
 categories:
   - web
   - 前端

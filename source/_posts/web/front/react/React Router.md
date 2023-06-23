@@ -1,5 +1,5 @@
 ---
-title: React路由实现
+title: React Router 使用
 date: 2023-03-11 22:30:15
 updated: 2023-03-12 10:07:18
 cover: https://pi.loili.com/2023/1c4f5102a78ba7fec349dc73a5e2c1a3.png
@@ -25,7 +25,7 @@ npm install react-router-dom -S
 
 **作用**：包裹整个应用，一个 React 应用只需要使用一次
 
-**两种常用 Router**：HashRouter 和 BrowserRouter (推荐)
+**两种常用 Router**：HashRouter（如果使用Electron，推荐使用这个） 和 BrowserRouter (如果构建web，推荐使用这个)
 
 ```jsx
 function App() {
@@ -202,3 +202,23 @@ export default Login
     <Route path='*' element={<NotFound />} />
   </Routes>
   ```
+
+  在 Github Pages 中，如果使用 `BrowserRouter`，刷新页面会出现 404，对于这个问题，参考如下：
+
+  ![react部署到github pages教程及路由匹配问题](https://blog.csdn.net/qq_21567385/article/details/108423111)
+
+  对于 vercel，可以写一个 vercel.json 文件，放置在根目录下（确保打包后在根目录），内容如下：
+
+  ```json
+  {
+    "routes": [
+      {
+        "src": "/[^.]+",
+        "dest": "/",
+        "status": 200
+      }
+    ]
+  }
+  ```
+
+  一般来说放到 public 文件夹下。
