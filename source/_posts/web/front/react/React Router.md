@@ -205,7 +205,7 @@ export default Login
 
   在 Github Pages 中，如果使用 `BrowserRouter`，刷新页面会出现 404，对于这个问题，参考如下：
 
-  ![react部署到github pages教程及路由匹配问题](https://blog.csdn.net/qq_21567385/article/details/108423111)
+  [react部署到github pages教程及路由匹配问题](https://blog.csdn.net/qq_21567385/article/details/108423111)
 
   对于 vercel，可以写一个 vercel.json 文件，放置在根目录下（确保打包后在根目录），内容如下：
 
