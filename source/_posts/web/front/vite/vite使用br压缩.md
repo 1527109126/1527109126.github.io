@@ -133,7 +133,7 @@ sudo apt-get install brotli
   sudo service apache2 restart
   ```
 
-- 验证 Apache 是否开启 br 压缩
+- <span id="verify-md">验证 Apache 是否开启 br 压缩</span>
 
   使用下面命令验证 Apache 是否开启 br 压缩
 
@@ -141,21 +141,10 @@ sudo apt-get install brotli
   curl -I -H 'Accept-Encoding: br' http://your-domain.com
   ```
 
-  如果开启了 br 压缩，会返回以下信息：
+  如果开启了 br 压缩，则会在返回信息中看到如下行：
 
   ```bash
-  HTTP/1.1 200 OK
-  Date: Thu, 01 Sep 2021 06:26:54 GMT
-  Server: Apache/2.4.46 (Ubuntu)
-  Upgrade: h2,h2c
-  Connection: Upgrade
-  Last-Modified: Fri, 10 Mei 2021 22:46:36 GMT
-  ETag: "33-5ba9m3ilanacdf-br"
-  Accept-Ranges: bytes
-  Vary: Accept-Encoding
   Content-Encoding: br
-  Content-Length: 36
-  Content-Type: text/html
   ```
 
   除了上面的方法，还可以参考如下教程：
@@ -219,8 +208,9 @@ http {
     ...
 }
 ```
-### 重载 Nginx，可借由 Brotli Test 等工具检验效果。
-
+### 重载 Nginx，检验效果。
 ```bash
 nginx -t && nginx -s reload
 ```
+可以参考上文 [验证 Apache 是否开启 br 压缩](#verify-md)
+也可以可借由 Brotli Test 等工具，或者 Chrome DevTools 的 Network 面板，查看响应头中的 Content-Encoding 字段。
