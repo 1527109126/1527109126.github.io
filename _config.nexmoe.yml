@@ -32,10 +32,13 @@ menu:
   文章归档: # 使用说明：https://docs.nexmoe.com/article/archive
     - /archive.html
     - icon-container
-  收藏夹:
+  我的作品:
+    - /works.html
+    - icon-container
+  收 藏 夹:
     - /favorites.html
     - icon-tags-fill
-  关于我:
+  关 于 我:
     - https://www.bietiaop.com
     - icon-info-circle
   友情链接:
