@@ -29,6 +29,10 @@ category_dir: categories
 code_dir: downloads/code
 i18n_dir: :lang
 skip_render:
+  - '*.scss'
+  - '*.js'
+  - '*.css'
+  - 'prism/*'
 
 # Writing
 new_post_name: :title.md # File name of new posts
@@ -40,7 +44,7 @@ external_link:
   exclude: ''
 filename_case: 0
 render_drafts: false
-post_asset_folder: false
+post_asset_folder: true
 relative_link: false
 future: true
 highlight:
@@ -54,8 +58,9 @@ prismjs:
   enable: true
   preprocess: true
   line_number: true
-  line_threshold: 0
+  line_threshold: 10
   tab_replace: ''
+  copy_text: '复制'
 # prism_plugin:
 #   mode: 'preprocess' # realtime/preprocess
 #   theme: 'tomorrow'
@@ -140,7 +145,10 @@ githubEmojis:
   inject: true
   styles:
   customEmojis:
-
-copy_button: 复制
-copy_success: 复制成功
-copy_failure: 复制失败
+copy_button:
+  enable: true
+  # Show text copy result
+  show_result: true
+# copy_button: 复制
+# copy_success: 复制成功
+# copy_failure: 复制失败

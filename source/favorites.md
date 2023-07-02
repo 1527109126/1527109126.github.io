@@ -1,6 +1,6 @@
 ---
 title: 收藏夹
-layout: favorites
+layout: py
 ---
 
 ## 精品网站
