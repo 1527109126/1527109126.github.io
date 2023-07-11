@@ -1,7 +1,7 @@
 ---
 title: GetX 学习日志
 date: 2023-07-10 08:15:13
-updated: 2023-07-10 23:59:38
+updated: 2023-07-11 23:59:38
 cover: https://techsolutionshere.com/wp-content/uploads/2021/10/getx.jpg
 categories:
   - Flutter
@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-如果我们使用 GetX，需要将 `MaterialApp` 替换为 `GetMaterialApp` ：
+如果我们使用 GetX 的一些功能例如路由功能，需要将 `MaterialApp` 替换为 `GetMaterialApp` ：
 
 ```dart
 import 'package:flutter/material.dart';
@@ -69,7 +69,7 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-使用 GetX 可以让我们尽量少使用 Stateful 组件，多的使用 Stateless 组件，提高应用性能。
+当然其他功能比如 Obx 等不需要替换程序入口。使用 GetX 可以让我们尽量少使用 Stateful 组件，多的使用 Stateless 组件，提高应用性能。
 
 ## Snackbar
 
@@ -724,7 +724,7 @@ class MyController extends GetxController {
 例如我们提前创建好上方的控制器类，下面要在组件里面实例化：
 
 ```dart
-MyController myController = Get.put(MyController());
+final MyController myController = Get.put(MyController());
 ```
 
 实例化之后可以在子组件里进行使用，有三种方式：
@@ -946,4 +946,956 @@ children: [
 
 ## 国际化配置
 
-还在学习，未完待续……最后更新日期：2023/07/10 23:59:38
+### 程序入口
+
+在 `GetMaterialApp` 中配置国际化：
+
+```dart
+GetMaterialApp(
+    title: "GetX",
+    translations: Messages(),
+    locale: Locale('zh', 'CN'), //设置默认语言
+    fallbackLocale: Locale("zh", "CN"), // 在配置错误的情况下,使用的语言
+    home: InternationalizationExample(),
+);
+```
+
+### 创建国际化类
+
+创建一个类继承 `Translations`，重写 `keys`，类型为 Map。
+
+```dart
+import 'package:get/get.dart';
+
+class Messages extends Translations {
+
+  @override
+  // TODO: implement keys
+  Map<String, Map<String, String>> get keys => {
+    'zh_CN': {
+      'hello': "你好, 世界"
+    },
+    'en_US': {
+      'hello': 'hello world'
+    }
+  };
+}
+```
+
+### 创建控制器类，用于切换语言
+
+创建一个控制器类，写入切换语言函数 `changeLanguage`，传入 `languageCode` 和 `countryCode`。然后使用 `Locale` 函数传入 `languageCode` 和 `countryCode` 获取地区参数。我们的语言类型组成为 `zh_CN` 用字符 `_` 隔开的。其中 `zh` 为我们所指的 `languageCode`，`CN` 为我们所指的 `countryCode`。因此在我们切换语言传入参数的时候，`languageCode` 和 `countryCode` 要对应我们配置的如 `zh_CN` 的 `zh` 和 `CN` 两个部分，参考下面的**实例化控制器并使用**。
+
+函数里使用 `Get.updateLocale()` 切换语言，传入参数为使用 `Locale` 获取到的地区参数。
+
+```dart
+import 'dart:ui';
+import 'package:get/get.dart';
+
+class MessagesController extends GetxController {
+
+  void changeLanguage(String languageCode, String  countryCode) {
+    var locale = Locale(languageCode, countryCode);
+    Get.updateLocale(locale);
+  }
+}
+```
+
+### 实例化控制器并使用
+
+使用国际化语言只需要在字符串后面加上 `.tr`。GetX 会根据配置的国际化类里的内容转换为相应的内容。例如我们在 `zh_CN` 配置的内容为：
+
+```json
+'zh_CN': {
+	'hello': "你好, 世界"
+},
+```
+
+我们在使用 `‘hello’.tr` 会获取中文语言中 key 为 `‘hello’` 的 Map 键的值，即为 `你好，世界`。
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_getx_example/GetXControllerWorkersExample/WorkersConroller.dart';
+import 'package:flutter_getx_example/InternationalizationExample/MessagesCnotroller.dart';
+import 'package:get/get.dart';
+
+class InternationalizationExample extends StatelessWidget {
+
+  final MessagesController messagesController = Get.put(MessagesController());
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: ...,
+      body: Center(
+        child: Column(
+          children: [
+            Text('hello'.tr), // 使用国际化语言
+            ElevatedButton(
+              onPressed: () => messagesController.changeLanguage('zh', "CN"),
+              child: Text("切换到中文")
+            ),
+            SizedBox(height: 20,),
+            ElevatedButton(
+              onPressed: () => messagesController.changeLanguage('en', "US"),
+              child: Text("切换到英文")
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+在上面的代码中使用了切换语言的函数 `changeLanguage`，传入两个参数 `languageCode` 和 `countryCode` 分别为 `zh` 和 `CN`，对应 `zh_CN`。
+
+## 依赖注入
+
+在上面的笔记中，我们使用 `Get.put(MyController())` 来进行控制器实例的创建，其实 `GetX` 还提供很多创建实例的方法，可根据不同的业务来进行创建，接下来我们简单介绍一下几个最常用的：
+
+- `Get.put()`：不使用控制器实例也会被创建
+- `Get.lazyPut()`：懒加载方式创建实例，只有在使用时才创建
+- `Get.putAsync()`：`Get.put()` 的异步版本
+- `Get.create()`：每次使用都会创建一个新的实例
+
+### 代码演示
+
+- 创建控制器
+
+  ```dart
+  import 'package:flutter_getx_example/ObxCustomClassExample/Teacher.dart';
+  import 'package:get/get.dart';
+  
+  class MyController extends GetxController {
+    var teacher = Teacher();
+    
+    void convertToUpperCase() {
+       teacher.name.value = teacher.name.value.toUpperCase();
+    }
+  }
+  ```
+
+- 实例化控制器并使用
+
+  - `Get.put()` 即使不使用控制器实例也会被创建；`tag` 将用于查找具有标签名称的实例；控制器在不使用时被处理，但如果永久为真，则实例将在整个应用程序中保持活动状态。
+
+    ```dart
+    final MyController myController = Get.put(MyController(), permanent: true);
+    ```
+
+  - `Get.lazyPut()` 实例将在使用时创建，它类似于 `permanent`，区别在于实例在不使用时被丢弃；但是当它再次被需要使用时，GetX 将重新创建实例。
+
+    ```dart
+    Get.lazyPut(()=> MyController());
+    Get.lazyPut(()=> MyController(), tag: "instancel");
+    ```
+
+  - `Get.putSync()` 为 `Get.put()` 异步版本。
+
+    ```dart
+    Get.putAsync<MyController>(() async  => await MyController());
+    ```
+
+  - `Get.create()` 每次都将返回一个新的实例。
+
+    ```dart
+    Get.create<MyController>(() => MyController());
+    ```
+
+使用时：
+
+```dart
+// 放在 onPressed 触发：
+onPressed: () {
+    // 实例使用的 tag 创建
+    // Get.find<MyController>(tag: 'instancel');
+
+    Get.find<MyController>();
+},
+```
+
+## Get Service
+
+这个类就像一个 `GetxController`，它共享相同的生命周期 `onInit()`、`onReady()`、`onClose()`。 但里面没有 “逻辑”。它只是通知**GetX**的依赖注入系统，这个子类**不能**从内存中删除。所以如果你需要在你的应用程序的生命周期内对一个类实例进行绝对的持久化，那么就可以使用 `GetxService`。
+
+- ### 创建 Service
+
+  想要创建 Service，我们需要定义一个类继承 `GetxService`：
+
+  ```dart
+  import 'package:get/get.dart';
+  import 'package:shared_preferences/shared_preferences.dart';
+  
+  class Service extends GetxService {
+  
+    Future<void> getCounter() async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int count = (prefs.getInt("counter") ?? 0) + 1;
+      print("count 的值为: $count");
+      await prefs.setInt("counter", count);
+    }
+  }
+  ```
+
+- ### 初始化 Service
+
+  我们需要创建一个初始化函数并在运行程序前进行调用：
+
+  在初始化函数中我们需要使用 `async-await` 等待所有我们定义的服务启动成功，在 `main` 函数中也使用 `async-await` 进行调用，确保所有的服务启动成功。
+
+  ```dart
+  import 'package:flutter/material.dart';
+  import 'package:flutter_getx_example/GetXServiceExample/GetXServiceExample.dart';
+  import 'package:flutter_getx_example/GetXServiceExample/Service.dart';
+  import 'package:get/get.dart';
+  
+  /// 初始化服务
+  Future<void> main() async {
+    await initServices();
+    runApp(MyApp());
+  }
+  
+  Future<void> initServices() async {
+    print("初始化服务");
+    await Get.putAsync(() async => await Service());
+    print("所有服务启动");
+  }
+  
+  class MyApp extends StatelessWidget {
+    @override
+    Widget build(BuildContext context) {
+      return GetMaterialApp(
+        title: "GetX",
+        home: GetXServiceExample(),
+      );
+    }
+  }
+  ```
+
+- ### 调用 Service
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_getx_example/GetXServiceExample/Service.dart';
+import 'package:get/get.dart';
+
+class GetXServiceExample extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("GetX Service"),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Get.find<Service>().getCounter();
+              },
+              child: Text("点我加1"))
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+## Binding
+
+在我们使用 `GetX` 状态管理器的时候，往往每次都是用需要手动实例化一个控制器，这样的话基本页面都需要实例化一次，这样就太麻烦了，而 `Binding` 能解决上述问题，可以在项目初始化时把所有需要进行状态管理的控制器进行统一初始化，接下来看代码演示：
+
+- ### 声明需要进行的绑定控制器类
+
+  下面有三个文件：
+
+  #### ① AllControllerBinding.dart
+
+  在这个文件中创建一个类继承 `Bindings`，重写 `dependencies()` 方法，在这个方法中启动我们所有的控制器：
+  
+  ```dart
+  import 'package:flutter_getx_example/GetXBindingExample/controller/BindingHomeController.dart'; // 引入文件 ② 从而导入控制器 BindingMyController
+  import 'package:flutter_getx_example/GetXBindingExample/controller/BindingMyController.dart'; // 引入文件 ③ 从而导入控制器 BindingHomeController
+  import 'package:get/get.dart';
+  
+  class AllControllerBinding implements Bindings {
+    
+    @override
+    void dependencies() {
+      // TODO: implement dependencies
+      Get.lazyPut<BindingMyController>(() => BindingMyController()); // 启动控制器
+      Get.lazyPut<BindingHomeController>(() => BindingHomeController()); // 启动控制器
+    }
+  }
+  ```
+  
+  #### ② BindingHomeController.dart
+  
+  ②和③文件都是定义控制器的，在上面文件中引入并启动
+  
+  ```dart
+  import 'package:get/get.dart';
+  
+  class BindingHomeController extends GetxController {
+      var count = 0.obs;
+      void increment() {
+        count++;
+      }
+  }
+  ```
+  
+  #### ③ BindingMyController.dart
+  
+  ```dart
+  import 'package:get/get.dart';
+  
+  class BindingMyController extends GetxController {
+      var count = 0.obs;
+      void increment() {
+        count++;
+      }
+  }
+  ```
+
+我们的绑定文件就已经写好了，下面就要进行初始化，我们若要进行初始化，那么就要在项目启动的时候，在 `GetMaterialApp()` 里面使用参数 `initialBinding` 导入我们的实例化绑定类，如下所示：
+
+
+- ### 在项目启动时进行初始化绑定
+
+  #### ④ main.dart
+
+  在主文件中我们在
+
+  ```dart
+  import 'package:flutter/material.dart';
+  import 'package:flutter_getx_example/GetXBindingExample/binding/AllControllerBinding.dart'; // 引入文件 ① 即绑定文件，里面实现了绑定类，我们需要引入并且使用绑定类
+  import 'package:flutter_getx_example/GetXBindingExample/GetXBindingExample.dart'; // 引入文件 ⑤，此文件里面有组件使用了控制器，我们引入就是为了使用这个组件
+  import 'package:get/get.dart';
+  
+  void main() {
+    runApp(MyApp());
+  }
+  
+  
+  class MyApp extends StatelessWidget {
+    @override
+    Widget build(BuildContext context) {
+      /// GetX Binding
+      return GetMaterialApp(
+        title: "GetX",
+        initialBinding: AllControllerBinding(), // 在这个地方我们初始化绑定
+        home: GetXBindingExample(),
+      );
+    }
+  }
+  ```
+
+  初始化绑定后我们就可以在组件中使用控制器了。
+
+  ##### 路由绑定
+
+  如果我们想绑定到指定路由内，我们可以在 `getPages` 配置项（上面已经提到过）里面在相应路由的 `GetPage` 方法内加上参数 `binding`，例如：
+
+  > 注意：
+  >
+  > - 下面所说的 `BHomeControllerBinding` 其实就是控制器 `BindingHomeController` 的绑定类，与上面的 `AllControllerBinding` 不同的是，`AllControllerBinding` 是将两个控制器合并在一起的（`dependencies()` 方法里启动了两个控制器），而 `BHomeControllerBinding` 仅仅启动了 `BindingHomeController`，因此没啥太大区别。然而代码比较重复我就不再记录。
+  > - `BHome` 组件内容与 `GetXBindingExample` 组件内容大致一样，因为为了演示路由绑定，因此复制粘贴了一个 `BHome` 组件页面，唯一的区别就是没有那个转跳按钮。
+
+  ```dart
+  getPages: [
+      GetPage(
+      	name: "/home",
+          page: ()=> const BHome(),
+          binding: BHomeControllerBinding() // 值为绑定类实例
+      )
+  ]
+  ```
+
+  此时运行是会报错的因为我们还没有对绑定类进行初始化，此时要在 `main()` 里面 `runApp()` 之前进行初始化：
+
+  ```dart
+  void main() {
+      BMyControllerBinding().dependencies();
+      runApp(MyApp());
+  }
+  ```
+
+  当然如果我们不想使用单独的绑定类，也可以绑定构建器，那么 `binding` 参数此时应该这样写（使用 `BindingsBuilder()` 方法）：
+
+  ```dart
+  binding: BindingsBuilder(() => {
+      Get.lazyPut<BindingHomeController>(() => BindingHomeController())
+  })
+  ```
+
+  此时 `main()` 函数里面**不需要**再初始化控制器了。
+
+- ### 在页面中使用状态管理器
+
+  #### ⑤ GetXBindingExample.dart
+
+  此文件内包含 `main.dart` 文件中引入的组件 `GetXBindingExample`，在这个组件里我们使用控制器 `BindingMyController`，我们只需要引入这个类并且使用 `Get.find()` 例如 `Get.find<BindingMyController>()` 就可以使用该控制器。
+
+  在 `BHome` 组件里（没有展示代码）我们使用的不是 `BindingMyController` 而是 `BindingHomeController` 是为了演示**路由绑定**。
+
+  ```dart
+  import 'package:flutter/material.dart';
+  import 'package:flutter_getx_example/GetXBindingExample/BHome.dart'; // 这个文件是一个页面组件，我们下面要使用路由转跳绑定进行演示 注释1（见下面使用例子里的解释）
+  import 'package:flutter_getx_example/GetXBindingExample/binding/BHomeControllerBinding.dart'; // 这个文件里面 BHome 页面组件使用的绑定类，我们在不使用声明式路由的时候在参数中使用绑定需要使用绑定类 注释1（见下面使用例子里的解释）
+  import 'package:flutter_getx_example/GetXBindingExample/controller/BindingMyController.dart'; // 引入文件 ③，即我们想使用的控制器
+  import 'package:get/get.dart';
+  
+  class GetXBindingExample extends StatelessWidget {
+    @override
+    Widget build(BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("GetXBinding"),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Obx(() => Text(
+                // 我们可以直接通过 Get.find() 来查找并使用我们的控制器
+                "计数器的值为 ${Get.find<BindingMyController>().count}",
+                style: TextStyle(color: Colors.red, fontSize: 30),
+              )),
+              SizedBox(height: 20,),
+              ElevatedButton(
+                onPressed: () {
+                  Get.find<BindingMyController>().increment();
+                },
+                child: Text("点击加1")
+              ),
+              SizedBox(height: 20,),
+              ElevatedButton(
+                onPressed: () {
+                  // 没有绑定进入页面，则点击加1没有效果
+                  Get.to(BHome());
+  
+                  // 若在声明式路由 即 getPages 里面配置了绑定，那么使用声明式路由转跳会使用控制器，点击加1是有效果的
+                  // Get.toNamed("/bHome");
+  
+                  // 若不使用声明式路由并且想要使用绑定，需要添加参数 binding，值为绑定类实例
+                  // 注释1：若不使用这种方式，注释1引入的两个文件都不需要引入了。
+                  // Get.to(BHome(), binding: BHomeControllerBinding());
+                },
+                child: Text("跳转去 Home 页")
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+  ```
+
+
+
+> 将服务器获取的数据转为类型，可以使用这个网站：[Instantly parse JSON in any language | quicktype](https://app.quicktype.io/)
+>
+> 只需要把数据粘贴到左侧右侧选择相应的语言就可以生成。
+
+
+
+## GetUtils
+
+`GetUtils ` 是 `getx` 为我们提供一些常用的工具类库，包括**值是否为空**、**是否是数字**、**是否是视频、图片、音频、PPT、Word、APK**、**邮箱、手机号码、日期、MD5、SHA1**等等。
+
+以判断是否是邮箱、手机号、IPV4地址为例：
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+class GetXUtilsExample extends StatelessWidget {
+
+  var textFieldController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("GetX Utils"),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: TextField(
+                controller: textFieldController,
+              ),
+            ),
+            SizedBox(height: 10,),
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: ElevatedButton(
+                child: Text("判断是否是邮箱"),
+                onPressed: () async {
+                  if (GetUtils.isEmail(textFieldController.text)) {
+                    Get.snackbar("正确", "恭喜你, 完全正确", backgroundColor: Colors.greenAccent);
+                  } else {
+                    Get.snackbar(
+                        "邮箱错误",
+                        "请输入正确的邮箱",
+                        backgroundColor: Colors.pink
+                    );
+                  }
+                },
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: ElevatedButton(
+                child: Text("判断是否是手机号"),
+                onPressed: () async {
+                  if (GetUtils.isPhoneNumber(textFieldController.text)) {
+
+                    Get.snackbar("正确", "恭喜你, 完全正确", backgroundColor: Colors.greenAccent);
+                  } else {
+                    Get.snackbar(
+                        "手机号错误",
+                        "请输入正确的手机号",
+                        backgroundColor: Colors.pink
+                    );
+                  }
+                },
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: ElevatedButton(
+                child: Text("判断是否是IPv4"),
+                onPressed: () async {
+                  if (GetUtils.isIPv4(textFieldController.text)) {
+
+                    Get.snackbar("正确", "恭喜你, 完全正确", backgroundColor: Colors.greenAccent);
+                  } else {
+                    Get.snackbar(
+                        "地址错误",
+                        "请输入正确的IPv4地址",
+                        backgroundColor: Colors.pink
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+```
+
+`GetUtils` 有以下方法（转自文档）：
+
+### 属性
+
+- *[hashCode](https://api.dart.dev/stable/3.0.5/dart-core/Object/hashCode.html)* → [int](https://api.dart.dev/stable/3.0.5/dart-core/int-class.html)
+
+  The hash code for this object.read-onlyinherited
+
+- *[runtimeType](https://api.dart.dev/stable/3.0.5/dart-core/Object/runtimeType.html)* → [Type](https://api.dart.dev/stable/3.0.5/dart-core/Type-class.html)
+
+  A representation of the runtime type of the object.read-onlyinherited
+
+### 方法
+
+- *[noSuchMethod](https://api.dart.dev/stable/3.0.5/dart-core/Object/noSuchMethod.html)*([Invocation](https://api.dart.dev/stable/3.0.5/dart-core/Invocation-class.html) invocation) → dynamic
+
+  Invoked when a nonexistent method or property is accessed.inherited
+
+- *[toString](https://api.dart.dev/stable/3.0.5/dart-core/Object/toString.html)*() → [String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html)
+
+  A string representation of this object.inherited
+
+### Operators
+
+- *[operator ==](https://api.dart.dev/stable/3.0.5/dart-core/Object/operator_equals.html)*([Object](https://api.dart.dev/stable/3.0.5/dart-core/Object-class.html) other) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  The equality operator.inherited
+
+### 静态方法
+
+- [camelCase](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/camelCase.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) value) → [String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html)?
+
+  用于将短句子或者短语转为驼峰字符串
+
+  Example: your name => yourName
+
+- [capitalize](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/capitalize.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) value) → [String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html)?
+
+  将每个单词首字母大写
+
+  Example: your name => Your Name
+
+- [capitalizeFirst](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/capitalizeFirst.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) s) → [String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html)?
+
+  将第一个单词首字母大写
+
+  Example: your name => Your name
+
+- [createPath](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/createPath.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) path, [[Iterable](https://api.dart.dev/stable/3.0.5/dart-core/Iterable-class.html)? segments]) → [String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html)
+
+  
+
+- [hasCapitalletter](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/hasCapitalletter.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) s) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串中是否含有大写字母
+
+- [hasMatch](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/hasMatch.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html)? value, [String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) pattern) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  
+
+- [isAlphabetOnly](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isAlphabetOnly.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) s) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串是否仅由字母组成。 (不包含空格)
+
+- [isAPK](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isAPK.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) filePath) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查路径地址是否为 APK 文件地址 (判断字符串结尾是不是 `.apk`)
+
+- [isAudio](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isAudio.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) filePath) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查路径地址是否为音频文件地址 (判断字符串结尾是不是常见的音频格式)
+
+- [isBinary](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isBinary.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) s) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符是否为二进制
+
+- [isBlank](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isBlank.html)(dynamic value) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)?
+
+  检查数据是否为纯空格组成或者空白字符串
+
+- [isBool](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isBool.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) value) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串是否为布尔（`true` 或 `false`）
+
+- [isCaseInsensitiveContains](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isCaseInsensitiveContains.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) a, [String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) b) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串 `a` 中是否包含字符串 `b` (不区分大小写)
+
+- [isCaseInsensitiveContainsAny](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isCaseInsensitiveContainsAny.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) a, [String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) b) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串 `a` 中是否包含字符串 `b` 或字符串 `b` 中是否包含字符串 `a` (不区分大小写) 
+
+- [isChm](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isChm.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) filePath) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查路径地址是否为 chm 文件地址
+
+- [isCnpj](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isCnpj.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) cnpj) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  
+
+- [isCpf](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isCpf.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) cpf) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串是否为有效 cpf
+
+- [isCurrency](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isCurrency.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) s) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串是否为货币
+
+- [isDateTime](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isDateTime.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) s) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串是否为时间戳 (UTC or Iso8601)
+
+- [isEmail](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isEmail.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) s) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串是否为邮箱格式
+
+- [isEqual](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isEqual.html)([num](https://api.dart.dev/stable/3.0.5/dart-core/num-class.html) a, [num](https://api.dart.dev/stable/3.0.5/dart-core/num-class.html) b) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查两个数字是否相等
+
+- [isExcel](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isExcel.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) filePath) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查路径地址是否为 Excel 文件地址
+
+- [isGreaterThan](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isGreaterThan.html)([num](https://api.dart.dev/stable/3.0.5/dart-core/num-class.html) a, [num](https://api.dart.dev/stable/3.0.5/dart-core/num-class.html) b) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  比较数字 `a` 是否大于数字 `b`
+
+- [isHexadecimal](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isHexadecimal.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) s) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串是否为十六进制
+
+  Example: HexColor => #12F
+
+- [isHTML](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isHTML.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) filePath) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查路径地址是否为 HTML 文件地址
+
+- [isImage](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isImage.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) filePath) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查路径地址是否为图片文件地址
+
+- [isIPv4](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isIPv4.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) s) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串是否为 IPv4 地址
+
+- [isIPv6](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isIPv6.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) s) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串是否为 IPv6 地址
+
+- [isLengthBetween](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isLengthBetween.html)(dynamic value, [int](https://api.dart.dev/stable/3.0.5/dart-core/int-class.html) minLength, [int](https://api.dart.dev/stable/3.0.5/dart-core/int-class.html) maxLength) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查数据长度是否在 `minLength` 到 `maxLength` 之间
+
+- [isLengthEqualTo](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isLengthEqualTo.html)(dynamic value, [int](https://api.dart.dev/stable/3.0.5/dart-core/int-class.html) otherLength) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查数据长度是否等于 `otherLength`
+
+- [isLengthGreaterOrEqual](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isLengthGreaterOrEqual.html)(dynamic value, [int](https://api.dart.dev/stable/3.0.5/dart-core/int-class.html) maxLength) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查数据长度是否大于或等于 `maxLength`
+
+- [isLengthGreaterThan](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isLengthGreaterThan.html)(dynamic value, [int](https://api.dart.dev/stable/3.0.5/dart-core/int-class.html) maxLength) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查数据长度是否大于 `maxLength`
+
+- [isLengthLessOrEqual](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isLengthLessOrEqual.html)(dynamic value, [int](https://api.dart.dev/stable/3.0.5/dart-core/int-class.html) maxLength) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查数据长度是否小于或等于 `maxLength`
+
+- [isLengthLessThan](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isLengthLessThan.html)(dynamic value, [int](https://api.dart.dev/stable/3.0.5/dart-core/int-class.html) maxLength) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查数据长度是否小于 `maxLength`
+
+- [isLengthLowerOrEqual](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isLengthLowerOrEqual.html)(dynamic value, [int](https://api.dart.dev/stable/3.0.5/dart-core/int-class.html) maxLength) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查数据长度是否小于或等于 `maxLength` （方法废除，用 `isLengthLessOrEqual` 代替）
+
+- [isLengthLowerThan](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isLengthLowerThan.html)(dynamic value, [int](https://api.dart.dev/stable/3.0.5/dart-core/int-class.html) maxLength) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查数据长度是否小于 `maxLength`（方法废除，用 `isLengthLessThan` 代替）
+
+- [isLowerThan](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isLowerThan.html)([num](https://api.dart.dev/stable/3.0.5/dart-core/num-class.html) a, [num](https://api.dart.dev/stable/3.0.5/dart-core/num-class.html) b) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查数字 `a` 是否小于数字 `b`
+
+- [isMD5](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isMD5.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) s) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串是否为 MD5
+
+- [isNull](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isNull.html)(dynamic value) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查数据是否为空 `null`
+
+- [isNullOrBlank](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isNullOrBlank.html)(dynamic value) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)?
+
+  检查数据是否为 `null` 或者空白 (为空或者仅由空格组成)
+
+- [isNum](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isNum.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) value) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串是否是否符合整型或者浮点型格式
+
+- [isNumericOnly](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isNumericOnly.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) s) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串是否只包含数字。数字不包含"`.`"。
+
+- [isOneAKind](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isOneAKind.html)(dynamic value) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查所有数据是否具有相同的值
+
+  Example: 111111 -> true, wwwww -> true, 1,1,1,1 -> true
+
+- [isPalindrom](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isPalindrom.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) string) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串是否为 Palindrom
+
+- [isPassport](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isPassport.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) s) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串是否为护照号码
+
+- [isPDF](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isPDF.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) filePath) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查路径地址是否为 PDF 文件地址
+
+- [isPhoneNumber](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isPhoneNumber.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) s) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串是否为手机号格式
+
+- [isPPT](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isPPT.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) filePath) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查路径地址是否为 PPT 文件地址
+
+- [isSHA1](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isSHA1.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) s) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串是否为 SHA1
+
+- [isSHA256](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isSHA256.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) s) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串是否为 SHA256
+
+- [isSSN](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isSSN.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) s) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串是否为SSN（社会安全号）
+
+- [isTxt](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isTxt.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) filePath) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查路径地址是否为文本文件地址
+
+- [isURL](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isURL.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) s) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串是否为网址格式
+
+- [isUsername](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isUsername.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) s) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查字符串是否为有效的用户名
+
+- [isVector](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isVector.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) filePath) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查路径地址是否为 vector 文件地址
+
+- [isVideo](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isVideo.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) filePath) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查路径地址是否为视频文件地址
+
+- [isWord](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/isWord.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) filePath) → [bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html)
+
+  检查路径地址是否为 Word 文件地址
+
+- [nil](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/nil.html)(dynamic s) → dynamic
+
+  In dart2js (in flutter v1.17) a var by default is undefined. *Use this only if you are in version <- 1.17*. So we assure the null type in json convertions to avoid the "value":value==null?null:value; someVar.nil will force the null type if the var is null or undefined. `nil` taken from ObjC just to have a shorter sintax.
+
+- [numericOnly](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/numericOnly.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) s, {[bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html) firstWordOnly = false}) → [String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html)
+
+  提取字符串中的数字
+
+  Example: OTP 12312 27/04/2020 => 1231227042020
+
+  如果 `firstWordOnly ` 为 `true`，那么返回示例 "12312"（第一个找到的数字单词）
+
+- [paramCase](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/paramCase.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html)? text) → [String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html)?
+
+  将短语或短句子用 `-` 连接
+
+- [printFunction](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/printFunction.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) prefix, dynamic value, [String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) info, {[bool](https://api.dart.dev/stable/3.0.5/dart-core/bool-class.html) isError = false}) → void
+
+  
+
+- [removeAllWhitespace](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/removeAllWhitespace.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) value) → [String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html)
+
+  删掉所有空格
+
+  Example: your name => yourname
+
+- [snakeCase](https://pub.dev/documentation/get/latest/get_utils_src_get_utils_get_utils/GetUtils/snakeCase.html)([String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html)? text, {[String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html) separator = '_'}) → [String](https://api.dart.dev/stable/3.0.5/dart-core/String-class.html)?
+
+  将短语或短句子用 `_` 连接
+
+## GetView
+
+`GetView` 只是对已注册的 `Controller` 有一个名为 `controller` 的 getter 的 `const Stateless` 的Widget，如果我们只有单个控制器作为依赖项，那我们就可以使用 `GetView` ，而不是使用 `StatelessWidget` ，并且避免了写 `Get.Find()`。
+
+GetView 的使用方法非常简单，只是要将视图层继承自 `GetView` 并传入需要注册的控制器并 `Get.put()` 即可，例如如下组件：
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_getx_example/GetViewAndGetWidgetExample/GetViewCountController.dart';
+import 'package:get/get.dart';
+// 我们仅需要继承 GetView
+class GetViewAndGetWidgetExample extends GetView<GetViewCountController> {
+
+  @override
+  Widget build(BuildContext context) {
+
+    Get.put(GetViewCountController());
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("GetX GetView"),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Obx(() => Text(
+              "count的值为:  ${controller?.count}",
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 30
+              ),
+            )),
+            SizedBox(height: 20,),
+            ElevatedButton(
+                onPressed: () {
+                  controller.increment();
+                },
+                child: Text("点我加1"))
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+## GetWidget
+
+它 “缓存 “了一个 Controller，由于 `_cache_` ，不能成为一个 “`const Stateless`”。当我们使用`Get.create(()=>Controller())` 会在每次调用时生成一个新的`Controller` `Get.find()`
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_getx_example/GetViewAndGetWidgetExample/GetViewCountController.dart';
+import 'package:get/get.dart';
+
+class GetViewAndGetWidgetExample extends GetWidget<GetViewCountController> {
+
+  @override
+  Widget build(BuildContext context) {
+
+    Get.create(() => GetViewCountController());
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("GetX GetView"),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Obx(() => Text(
+              "count的值为:  ${controller?.count}",
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 30
+              ),
+            )),
+            SizedBox(height: 20,),
+            ElevatedButton(
+              onPressed: () {
+                controller.increment();
+              },
+              child: Text("点我加1"))
+          ],
+        ),
+      ),
+    );
+  }
+
+}
+```
+
+在我们平时的开发过程中基本上很少会用到 `GetWidget`，因为我们在大部分情况下都不需要缓存 Controller。
+
+当我们的页面中只依赖了一个控制器的情况话，那么使用 `GetView` 将是很好的选择，因为他大大简化了我们的代码。
+
+## Cli 脚手架
+
+未完待续
