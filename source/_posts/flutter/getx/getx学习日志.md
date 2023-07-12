@@ -1898,4 +1898,627 @@ class GetViewAndGetWidgetExample extends GetWidget<GetViewCountController> {
 
 ## Cli 脚手架
 
-未完待续
+Cli 脚手架能够让我们通过命令实现项目的创建、页面的创建等，一行命令就能实现复杂的操作。
+
+### 安装 Cli 脚手架
+
+通过命令安装：
+
+```bash
+flutter pub global activate get_cli
+```
+
+安装成功将看到如下结果：
+
+![image-20230712103536186](./getx学习日志/image-20230712103536186.png)
+
+### 设置环境变量
+
+安装好后看到命令行 `Warning` 字段有提示，让我们添加环境变量，我们根据提示添加环境变量即可。
+
+Windows 可以直接在设置系统环境变量里面在 `path` 字段添加即可，MacOS、Linux 需要在根目录的 `.bash_profile` 文件添加如下行：
+
+```bash
+#getX
+export PATH="$PATH":"$HOME/.pub-cache/bin"
+```
+
+然后通过 `source` 加上路径，对环境变量生效（自行操作）。
+
+### 校验是否安装成功
+
+我们通过 `get` 命令，看能不能打印如下，如果有，那么就表示安装成功了。（需要关闭之前的命令行，重新打开一个）
+
+![image-20230712110518937](./getx学习日志/image-20230712110518937.png)
+
+### Cli 创建工程
+
+我们可以通过 `get create project` 来进行创建工程：
+
+```bash
+get create project
+```
+
+然后出现如下提示，我们选择创建`Flutter Project`
+
+![image-20230712110752435](./getx学习日志/image-20230712110752435.png)
+
+选择之后需要输入**工程名称**、**公司域名**、**选择iOS语言**、**选择Android语言**、**是否空安全**、**是否校验**，选完知道就会为我们开始创建工程。
+
+![image-20230712110914755](./getx学习日志/image-20230712110914755.png)
+
+若 flutter 以及 dart 版本过高可能没有 `dart migrate` 命令，若我们选择空安全会出现如下报错：
+
+![image-20230712114829045](./getx学习日志/image-20230712114829045.png)
+
+此时我们进入到新建的项目目录，然后执行以下指令：
+
+```bash
+get init
+```
+
+然后选择第一个：
+
+![image-20230712114915247](./getx学习日志/image-20230712114915247.png)
+
+等待执行完毕即可。
+
+目前不知道还有没有其他解决方法。
+
+此时我们可以打开我们的项目文件。若使用 Android Studio 打开项目文件会发现文件列表仅显示两个文件夹并且文件内容不是我们的主文件内容，此时我们点击左上角的选项（`Android`），选择 `project`：
+
+![image-20230712115139528](./getx学习日志/image-20230712115139528.png)
+
+![image-20230712115236234](./getx学习日志/image-20230712115236234.png)
+
+然后就会转到我们的项目文件夹，展开找到 `lib` 文件夹，里面就是我们写代码的文件了。
+
+![image-20230712115324011](./getx学习日志/image-20230712115324011.png)
+
+接下来我们就可以使用 GetCli 创建页面、路由、控制器等。
+
+### Cli 创建页面
+
+在我们使用 `get init` 命令的时候我们已经选择了目录结构，我们可以根据我们选择的结构进行下面指令的使用
+
+#### 第一种：Getx_pattern
+
+我们可以通过 `get create page:<页面名称>` 来快速创建一个页面，这个页面有 `controller` 、 `view` 、 `binding` 、 `routes` 等配置，结构是 `Getx_pattern` ：
+
+![image-20230712115634541](./getx学习日志/image-20230712115634541.png)
+
+#### 第二种：CLEAN
+
+我们可以通过 `get create screen:<页面名称>` 来快速创建一个页面，这个页面有 `controller` 、 `view` 、 `binding` 、 `routes` 等配置，结构是 `CLEAN`：
+
+![image-20230712115757377](./getx学习日志/image-20230712115757377.png)
+
+### Cli 创建控制器
+
+我们可以通过 `get create controller:<控制器名称>` 来快速为已存在的 page 进行创建 `controller` ，并且他还重新了 `controller` 的生命周期以及初始化方法。要想绑定页面，需要在命令后面添加 `on` 参数：
+
+![image-20230712120224887](./getx学习日志/image-20230712120224887.png)
+
+### Cli 创建 View
+
+如果我们只是想单独创建一个 `View`，那我们可以通过 `get create view:<view名称> on <页面名称>` 来进行创建：
+
+![image-20230712120356528](./getx学习日志/image-20230712120356528.png)
+
+### Cli 创建 Provider
+
+如果我们需要创建 `GetConnect` ，那我们可以通过 `get create provider:blogin on login` 来进行创建。
+
+```bash
+ get create provider:blogin on login
+```
+
+![image-20230712120613714](./getx学习日志/image-20230712120613714.png)
+
+![image-20230712120638853](./getx学习日志/image-20230712120638853.png)
+
+### Cli创建国际化
+
+如果我们需要对应用进行国际化配置，那我们可以通过 `get generate locales assets/locales` 来进行创建。
+
+首先在 `assets/locales` 目录创建 json 格式的语言文件：
+
+zh_CN.json
+
+```json
+{
+  "buttons": {
+    "login": "登录",
+    "sign_in": "注册",
+    "logout": "注销",
+    "sign_in_fb": "用 Facebook 登录",
+    "sign_in_google": "用 Google 登录",
+    "sign_in_apple": "用 Apple 登录"
+  }
+}
+```
+
+en_US.json
+
+```json
+{
+  "buttons": {
+    "login": "Login",
+    "sign_in": "Sign-in",
+    "logout": "Logout",
+    "sign_in_fb": "Sign-in with Facebook",
+    "sign_in_google": "Sign-in with Google",
+    "sign_in_apple": "Sign-in with Apple"
+  }
+}
+```
+
+运行 :
+
+```bash
+get generate locales assets/locales
+```
+
+![image-20230712121219601](./getx学习日志/image-20230712121219601.png)
+
+现在只需要在 GetMaterialApp 中加入
+
+```dart
+GetMaterialApp(
+  ...
+  translationsKeys: AppTranslation.translations,
+  ...
+)
+```
+
+### Cli 通过json生成模型
+
+#### 第一种：不仅创建模型类，还会提供Provider
+
+如果我们需要对某个json文件生成模型，那我们可以通过`get generate model on home with assets/models/user.json`来进行生成
+
+```bash
+get generate model on home with assets/models/user.json
+✓  File: user_model.dart created successfully at path: ./lib/app/modules/home/user_model.dart
+✓  File: user_provider.dart created successfully at path: ./lib/app/modules/home/providers/user_provider.dart
+
+Time: 499 Milliseconds
+```
+
+#### 第二种：只生成模型类
+
+```bash
+get generate model on login with assets/models/user.json --skipProvider
+✓  File: user_model.dart created successfully at path: ./lib/app/modules/login/user_model.dart
+
+Time: 408 Milliseconds
+```
+
+#### 第三种：通过连接生成模型类
+
+```bash
+get generate model on home from "https://api.github.com/users/CpdnCristiano"
+? Could not set the model name automatically, which name do you want to use? githubHome
+✓  File: github_home_model.dart created successfully at path: ./lib/app/modules/home/github_home_model.dart
+✓  File: github_home_provider.dart created successfully at path: ./lib/app/modules/home/providers/github_home_provider.dart
+
+Time: 14033 Milliseconds
+```
+
+### Cli 安装包（dependencies)
+
+#### 第一种：直接安装最新版本
+
+```bash
+get install dio
+
+Installing package "dio" …
+
+✓  'Package: dio installed!
+
+Running `flutter pub get` …
+
+$ flutter pub get
+Running "flutter pub get" in getx_example...                     2,656ms
+
+Time: 5815 Milliseconds
+```
+
+#### 第二种：同时安装多个包
+
+```bash
+get install path dio
+
+Installing package "path" …
+
+✓  'Package: path installed!
+
+Installing package "dio" …
+
+✓  'Package: dio installed!
+
+Running `flutter pub get` …
+
+$ flutter pub get
+Running "flutter pub get" in getx_example...                       732ms
+
+Time: 7146 Milliseconds
+```
+
+#### 第三种：安装自定版本的包
+
+```bash
+get install prodiver:5.0.0
+
+Installing package "prodiver" …
+
+✓  'Package: prodiver installed!
+```
+
+### Cli安装包（dev_dependencies)
+
+我们可以通过 `get install flutter_launcher_icons --dev` 安装开发时所依赖的包
+
+```bash
+get install flutter_launcher_icons --dev
+
+
+The [--dev] is not necessary
+
+
+Installing package "flutter_launcher_icons" …
+
+✓  'Package: flutter_launcher_icons installed!
+```
+
+### Cli卸载包
+
+#### 第一种：卸载某个安装包
+
+```bash
+get remove http
+
+Removing package: "http"
+
+
+Package: http is not installed in this application
+
+
+Running `flutter pub get` …
+
+$ flutter pub get
+Running "flutter pub get" in getx_example...                       772ms
+
+Time: 2641 Milliseconds
+```
+
+#### 第二种：同时卸载多个包
+
+```bash
+get remove dio path
+
+Removing package: "dio"
+
+✓  Package: dio removed!
+
+Removing package: "path"
+
+✓  Package: path removed!
+
+Running `flutter pub get` …
+
+$ flutter pub get
+Running "flutter pub get" in getx_example...                     1,085ms
+
+Time: 3142 Milliseconds
+```
+
+### Cli 更新脚手架
+
+我们可以通过`get update`对脚手架进行更新
+
+```bash
+get update
+
+Latest version of get_cli already installed
+
+
+Time: 3315 Milliseconds
+```
+
+## Cli查看版本号
+
+我们可以通过`get -v` 查看当前脚手架的版本号
+
+```bash
+get -v
+░██████╗░███████╗████████╗   ░█████╗░██╗░░░░░░██╗
+██╔════╝░██╔════╝╚══██╔══╝   ██╔══██╗██║░░░░░░██║
+██║░░██╗░█████╗░░░░░██║░░░   ██║░░╚═╝██║░░░░░░██║
+██║░░╚██╗██╔══╝░░░░░██║░░░   ██║░░██╗██║░░░░░░██║
+╚██████╔╝███████╗░░░██║░░░   ╚█████╔╝███████╗ ██║
+░╚═════╝░╚══════╝░░░╚═╝░░░   ░╚════╝░╚══════╝ ╚═╝
+
+Version: 1.6.0
+
+Time: 148 Milliseconds
+```
+
+## Cli帮助
+
+当我们忘记了命令的使用方式，我们可以通过`get help`进行查看帮助。
+
+```bash
+get help
+
+List available commands:
+
+  create:  
+    controller:  Generate controller
+    page:  Use to generate pages
+    project:  Use to generate new project
+    provider:  Create a new Provider
+    screen:  Generate new screen
+    view:  Generate view
+  generate:  
+    locales:  Generate translation file from json files
+    model:  generate Class model from json
+  help:  Show this help
+  init:  generate the chosen structure on an existing project:
+  install:  Use to install a package in your project (dependencies):
+  remove:  Use to remove a package in your project (dependencies):
+  sort:  Sort imports and format dart files
+  update:  To update GET_CLI
+  --version:  Shows the current CLI version'
+
+Time: 94 Milliseconds
+```
+
+## StateMixin
+
+- Flutter 中一种更新 UI 的方式是使用 `StateMixin`，`StateMixin` 是多种状态的混合
+- 因为 `Controller` 是负责处理数据和业务功能的，在 `Controller` 的后面使用 `with StateMixin`
+- `StateMixin<T>` 中T是数据模型，比如 `User` ，`StateMixin<User>`
+- 当数据模型的数据改变时(如：空/完成/出错等)时，调用 `change(data, status);` 方法
+
+#### RxStatus中的状态
+
+```dart
+RxStatus.loading();
+RxStatus.loadingMore()
+RxStatus.success();
+RxStatus.empty();
+RxStatus.error('message');
+```
+
+### StateMixin使用示例
+
+`main.dart`：
+
+主要配置 APP 显示 `Home`： 
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:getx_sample/views/Home.dart';
+
+void main() => runApp(GetMaterialApp(home: Home()));
+```
+
+`Home.dart`：
+
+引入 `Controller` 并使用：
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:getx_sample/views/OtherClass.dart'; // 显示页面（下面通过 Get.to 转跳）
+import '../controller/Controller.dart';
+
+class Home extends StatelessWidget {
+
+  @override
+  Widget build(context) {
+    //通过Get.put()方法初始化Controller
+    final Controller c = Get.put(Controller());
+    return Scaffold(
+      //当count变化时，Obx可以监听改变
+        appBar: AppBar(title: Obx(() => Text("Clicks: ${c.count}"))),
+        //通过Get.to方法取代Navigator.push代替页面间的跳转
+        body: Center(child: ElevatedButton(
+            child: Text("Go to Other"), onPressed: () => Get.to(OtherClass()))),
+        floatingActionButton:
+        FloatingActionButton(child: Icon(Icons.add), onPressed: c.increment));
+  }
+}
+```
+
+`user.dart`：实体类
+
+```dart
+class User {
+  User({this.name = '', this.age = 0});
+  String name;
+  int age;
+}
+```
+
+`Controller.dart`：控制器
+
+```dart
+import 'package:get/get.dart';
+import 'package:getx_sample/bean/User.dart'; // 实体类（即类型）
+
+class Controller extends GetxController with StateMixin<User> { // 继承 StateMixin
+  var count = 0.obs;
+
+  increment() => interval(count++, (_) => print("interval $_"),
+      time: Duration(seconds: 1));
+
+  changeLoading() {
+    change(User(name: '1',age: 18), status: RxStatus.loading());
+  }
+
+  changeSuccess() {
+    change(User(name: 'Success',age: 20), status: RxStatus.success());
+  }
+
+  changeEmpty() {
+    change(User(name: '4',age: 21), status: RxStatus.empty());
+  }
+
+  changeError() {
+    change(User(name: '5',age: 22), status: RxStatus.error('error'));
+  }
+}
+```
+
+`OtherClass.dart`：显示页面，StateMixin 更新UI
+
+```dart
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_state_manager/get_state_manager.dart';
+import '../controller/Controller.dart';
+
+class OtherClass extends GetView<Controller> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+        Center(
+          child:controller.obx(
+              (state) => Text(state!.name),
+          //onLoading: const CupertinoActivityIndicator(radius: 10), //加载中，默认是个Center(child:CircularProgressIndicator())
+          onEmpty: const Text('No data found'), //空数据显示
+          onError: (error) => Text(error!), //出错界面显示
+        )),
+        RaisedButton(child: Text("Loading"), onPressed: () {controller.changeLoading();},),//TextButton文字
+        RaisedButton(child: Text("Success"), onPressed: () {controller.changeSuccess();},),//TextButton文字
+        RaisedButton(child: Text("Empty"), onPressed: () {controller.changeEmpty();},),//TextButton文字
+        RaisedButton(child: Text("Error"), onPressed: () {controller.changeError();},),//TextButton文字
+      ],
+      )
+    );
+  }
+}
+```
+
+## GetConnect
+
+- GetX提供一种简便的网络请求方式：GetConnect
+- 该请求方式支持：Rest API 的 GET/POST/PUT/DELETE/SOCKET 及 websocket 通信
+- 支持自定义配置：请求拦截，响应拦截，Authen 认证等
+
+### 定义 Provider
+
+#### BaseProvider
+
+这个与我们使用 `axios` 创建网络请求类似，我们通常封装一个带有 `baseURL` 以及认证的请求拦截器，我们在定义其他的 GetConnect 的时候通常会继承一个 BaseProvider（用于拦截请求进行封装等）：
+
+```dart
+class BaseProvider extends GetConnect {
+  @override
+  void onInit() {
+    httpClient.baseUrl = SERVER_API_URL;
+
+    // 请求拦截
+    httpClient.addRequestModifier<void>((request) {
+      request.headers['Authorization'] = 'xxxxxx'; // 添加认证信息
+      return request;
+    });
+
+    // 响应拦截
+    httpClient.addResponseModifier((request, response) {
+      return response;
+    });
+  }
+}
+```
+
+上面代码中 `SERVER_API_URL` 为我们服务器 API 地址。
+
+#### 其他 Provider
+
+例如我们做一个列表请求：
+
+```dart
+class ArticleProvider extends BaseProvider {
+  Future<Response> GetArticles(int id) => get('/articles/$id');
+}
+```
+
+### 在控制器里进行使用
+
+```dart
+class ArticleController extends GetxController with StateMixin<Article>{
+  // 寻找 Provider
+  final ArticleProvider articles = Get.find();
+
+  void getArticle() async {
+    //刚开始显示加载中
+    change(null,status: RxStatus.loading());
+    //执行网络请求（Provider 中的 GetArticles(id) 方法
+    Response response = await articles.GetArticles(0);
+    //请求出错时
+    if(response.hasError){
+      change(null,status: RxStatus.error('Error'));
+    }else{
+      //请求成功时，显示数据
+      Article article = Article.fromJson(response.body);
+      change(article,status: RxStatus.success());
+    }
+  }
+  @override
+  void onInit() {
+    super.onInit();
+    //初始化时请求数据
+    getArticle();
+  }
+}
+```
+
+- 此处使用了 `StateMixin`，请求前显示加载中，根据请求情况显示成功和失败结果
+- `Article`：为数据类(自定义解析，不再列出，我们可以通过上面的 GetCli 的方法将返回的结果生成数据类)
+- `onInit`：在程序初始化时，执行 `getArticle` 方法，请求网络数据
+- 使用 `change` 方法执行状态改变
+
+### 数据显示（在组件中）
+
+```dart
+class ArticleWidget extends GetView<ArticleController>{
+  @override
+  Widget build(BuildContext context) {
+    return _buildMixState();
+  }
+  Widget _buildMixState(){
+    return controller.obx(
+              (data) => ListView.separated(
+                itemCount: data!.data!.datas.length,
+                separatorBuilder: (context, index) {
+                    return Divider(height: 10, color: Colors.grey);
+                },
+                itemBuilder: (BuildContext context, int index) {
+                  return Column(
+                    children: [
+                      Text(data.data!.datas[index].author),
+                      Text(data.data!.datas[index].title),
+                      Text(data.data!.datas[index].niceShareDate)
+                    ],
+                  );
+                },
+              ),
+          onLoading: const CupertinoActivityIndicator(radius: 10), //加载中，默认是个Center(child:CircularProgressIndicator())
+          onEmpty: const Text('No data found'), //空数据显示
+          onError: (error) => Text(error!), //出错界面显示
+        );
+  }
+}
+```
+
+## 结束
+
+寥寥草草地结束。
