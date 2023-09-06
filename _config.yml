@@ -135,6 +135,20 @@ hexo_external_link:
   #domain: 'your_domain' # 如果开启了防盗链
   safety_chain: true
 
+# Math Formulas Render Support
+math:
+  enable: false
+  # Default (true) will load mathjax / katex script on demand.
+  # That is it only render those page which has `mathjax: true` in Front-matter.
+  # If you set it to false, it will load mathjax / katex srcipt EVERY PAGE.
+  per_page: true
+
+  # hexo-renderer-pandoc (or hexo-renderer-kramed) required for full MathJax support.
+  mathjax:
+    enable: false
+    # See: https://mhchem.github.io/MathJax-mhchem/
+    mhchem: false
+
 permalink_pinyin:
   enable: true
   separator: '-' # default: '-'
